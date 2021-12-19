@@ -2,13 +2,13 @@ from pathlib import Path
 
 class Settings():
     # Ordner der neuornalen Netze
-    network_path = Path("D:\\SemiABI\\SemiABICode\\network-data")
+    network_path = Path("D:\\SemiABI\\SemiCode\\network-data")
 
     # Ordner der Eingabevideos
-    input_path = Path("D:\\SemiABI\\SemiABICode\\input_videos")
+    input_path = Path("D:\\SemiABI\\SemiCode\\input_videos")
 
     # Ordner der Ausgabevideos
-    output_path = Path("D:\\SemiABI\\SemiABICode\\output_videos")
+    output_path = Path("D:\\SemiABI\\SemiCode\\output_videos")
 
     # nach Bienen untersuchter Bildausschnitt
     x0 = 0

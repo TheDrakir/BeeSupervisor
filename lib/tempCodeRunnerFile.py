@@ -1,0 +1,1 @@
+         self.detected_bees = self.detector.get_bees(image)

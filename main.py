@@ -11,14 +11,13 @@ from lib.clip_video import clip_video
 def main():
     t0 = Timer("absolute")
     t0.begin()
-    vin_name = "varroa2.mp4"
 
     bee_detector = Bee_Detector("bee_detector.weights", "yolov4-tiny.cfg")
     vra_detector = Vra_Detector("vra_detector.weights", "yolov4-tiny.cfg")
 
 
-    tracker = Tracker(Settings.input_path / vin_name, bee_detector, vra_detector)
-    tracker.run(0, 300, Settings.frame_dist)
+    tracker = Tracker(Settings.input_path / Settings.vin_name, bee_detector, vra_detector)
+    tracker.run(Settings.start_time, Settings.end_time, Settings.frame_dist)
 
     clip_video(tracker)
 

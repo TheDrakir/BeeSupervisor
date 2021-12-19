@@ -1,6 +1,9 @@
 from pathlib import Path
 
 class Settings():
+    # Name des Eingabevideos
+    vin_name = "varroa2.mp4"
+
     # Ordner der neuornalen Netze
     network_path = Path("D:\\SemiABI\\SemiCode\\network-data")
 
@@ -9,6 +12,11 @@ class Settings():
 
     # Ordner der Ausgabevideos
     output_path = Path("D:\\SemiABI\\SemiCode\\output_videos")
+
+    # Startzeitpunkt der Videoanalyse in Sekunden
+    start_time = 0
+    # Endzeitpunkt der Videoanalyse in Sekunden
+    end_time = 300
 
     # nach Bienen untersuchter Bildausschnitt
     x0 = 0

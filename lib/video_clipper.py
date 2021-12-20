@@ -18,12 +18,12 @@ class Video_Clipper:
         self.apply = apply
         self.active = active
 
+        self.editor = Editor(tracker)
+
         self.writing = False
         self.start_frame = 0
         self.last_active_frame = 0
         self.vt = Video_Tools(tracker.fps)
-
-        self.clear_dir()
 
     def update(self):
         '''Wird '''
@@ -41,7 +41,7 @@ class Video_Clipper:
     # öffnet das Ausgabevideo
     def open(self):
         self.start_frame = self.last_active_frame
-        self.vout_path = self.path / "clip_from-{}.mp4".format(self.vt.get_time_stamp(self.last_active_frame))
+        self.vout_path = self.path / "{}-{}.mp4".format(self.tracker.vin_path.stem, self.vt.get_time_stamp(self.last_active_frame))
         if Settings.draw_edits:
             self.vout = cv2.VideoWriter()
             fps = self.tracker.fps / Settings.frame_dist
@@ -53,7 +53,7 @@ class Video_Clipper:
     # schreibt das nächste Videoeinzelbild in das Ausgabevideo
     def write_frame(self):
         if Settings.draw_edits:
-            edited = Editor.get_edited(self.tracker.image, self.tracker.bees)
+            edited = self.editor.get_edited()
             self.vout.write(edited)
 
     # schreibt das Ausgabevideo in den Zielordner
@@ -68,9 +68,10 @@ class Video_Clipper:
         self.writing = False
 
     # erstellt ein leeres output-Verzeichnis für den object_type
-    def clear_dir(self):
-        Video_Clipper.rm_tree(self.path)
-        self.path.mkdir(parents=True, exist_ok=True)
+    @staticmethod
+    def clear_dir(p):
+        Video_Clipper.rm_tree(p)
+        p.mkdir(parents=True, exist_ok=True)
 
     # löscht ein Verzeichnis und seine Inhalte, falls es existiert
     @staticmethod

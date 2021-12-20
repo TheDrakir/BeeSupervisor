@@ -6,10 +6,13 @@ from lib.animal import Animal
 
 class Vra_Detector:
     '''Klasse zur Untersuchung von Bienen auf eine Varroa-Infektion'''
-    def __init__(self, weights):
+
+    confidence_thresh = .8
+
+    def __init__(self, weights, config):
 
         # lade das yolov4-tiny Netzwerk
-        self.network = cv2.dnn.readNet(str(Settings.network_path / weights), str(Settings.network_path / Settings.config_name))
+        self.network = cv2.dnn.readNet(str(Settings.network_path / weights), str(Settings.network_path / config))
 
         # definiere den Index der zu erkennenden Klassen des Netzwerks
         self.vra_ind = 0
@@ -37,13 +40,9 @@ class Vra_Detector:
 
         for output in outputs:
             for detection in output:
-                # Showing informations on the screen
                 confidence = detection[5 + self.vra_ind]
-                if confidence > 0:
-                    print(confidence)
-                if confidence > .8:
+                if confidence > Vra_Detector.confidence_thresh:
                     ctr = int(detection[0] * w), int(detection[1] * h)
                     dim = int(detection[2] * w), int(detection[3] * h)
                     return Animal(ctr, dim)
-        cv2.imshow("image", image)
         return None

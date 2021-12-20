@@ -8,19 +8,22 @@ from lib.video_tools import Video_Tools
 class Editor:
     '''Klasse zum editieren von Bildern'''
     
+    def __init__(self, tracker):
+        self.tracker = tracker
 
-    @staticmethod
-    def get_edited(image, bees):
+    def get_edited(self):
         '''
        gibt ein editiertes Bild für das Ausgabevideo auf Basis der Einstellungen aus settings.py zurück
         
         :param image: das zu editierende Bild
         :param bees: die Bienen im zu editierenden Bild
         '''
-        edited = image.copy()
+        edited = self.tracker.image.copy()
         if Settings.darken_background:
-            mask = np.full(image.shape[:2] + (1,), 0.25, np.float)
-        for bee in bees:
+            mask = np.full(self.tracker.image.shape[:2] + (1,), 0.25, np.float)
+        for bee in self.tracker.bees:
+            if bee.infected:
+                cv2.imwrite(str(Settings.output_path / "images" / "{}-{}.jpg".format(self.tracker.vin_path.stem, self.tracker.frame)), Editor.get_cropped_bee(self.tracker.image, bee))
             if Settings.draw_rectangles:
                 cv2.rectangle(edited, tuple(bee.pos0.decropped()), tuple(bee.pos1.decropped()), Editor.get_color(bee), 2)
                 cv2.putText(edited, str(bee.id), tuple(bee.pos0.decropped()), cv2.FONT_HERSHEY_SIMPLEX, 1, Editor.get_color(bee), 2, 2)
@@ -47,4 +50,9 @@ class Editor:
     # gibt den Bildausschnitt der Biene bee zurück
     @staticmethod
     def get_cropped_bee(image, bee):
-        return image[Settings.y0 : , Settings.x0 : ][bee.pos0[1] : bee.pos1[1], bee.pos0[0] : bee.pos1[0]]
+        return image[Settings.y0 : , Settings.x0 : ][bee.pos0.y : bee.pos1.y, bee.pos0.x : bee.pos1.x]
+
+import random
+import string
+def rand_name(chars = string.ascii_lowercase, N=8):
+    return ''.join(random.choice(chars) for _ in range(N)) + ".jpg"

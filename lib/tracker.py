@@ -10,6 +10,13 @@ from lib.video_clipper import Video_Clipper
 class Tracker:
     '''Klasse zur Verfolgung und Untersuchung von Bienen in einem Video'''
 
+    # maximale Bewegungsdistanz einer Biene zwischen zwei untersuchten Frames
+    bee_dist_thresh = Settings.frame_dist * 40
+
+    # maximale Distanz zwischen mehreren Bounding Boxes einer Biene
+    # damit wird die mehrfache Erkennung einer Biene verhindert
+    bee_duplicate_dist = 30
+
     def __init__(self, vin_path, bee_detector, vra_detector):
         self.vin_path = vin_path
 
@@ -104,8 +111,9 @@ class Tracker:
         '''
         füge eine Biene zu der Liste der Bienen im aktuellen Videoeinzelbild hinzu und tracke sie ggf. zum vorherigen Bild
         
-        :param new_bee: hinzugefügte Biene'''
-        closest_dist = Settings.bee_dist_thresh
+        :param new_bee: hinzugefügte Biene
+        '''
+        closest_dist = Tracker.bee_dist_thresh
         closest_bee = new_bee
 
         for prev_bee in self.prev_bees:
@@ -116,11 +124,11 @@ class Tracker:
                     closest_bee = prev_bee
 
         for bee in self.bees:
-            if bee.dist(new_bee) <= Settings.bee_duplicate_dist:
+            if bee.dist(new_bee) <= Tracker.bee_duplicate_dist:
                 return
 
         closest_bee.track(new_bee)
-        if closest_dist == Settings.bee_dist_thresh:
+        if closest_dist == Tracker.bee_dist_thresh:
             closest_bee.id = self.bee_counter.value
             self.bee_counter.increment()
         self.bees.append(closest_bee)

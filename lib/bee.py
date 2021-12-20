@@ -20,7 +20,7 @@ class Bee(Animal):
 
     def track(self, other):
         '''
-        trackt die Biene zu einer anderen Biene im nächsten Videoeinzelbild
+        verfolgt die Biene zu einer anderen Biene im nächsten Videoeinzelbild
         
         :param other: andere Biene
         '''

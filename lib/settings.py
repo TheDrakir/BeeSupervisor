@@ -1,13 +1,10 @@
 from pathlib import Path
 
 class Settings():
-    '''Klasse zum speichern aller Nutzereingaben'''
+    '''Klasse zum speichern und abrufen aller Nutzereingaben'''
 
     # Name des Eingabevideos
-    vin_name = "varroa2.mp4"
-
-    # Name der Konfigurationsdatei von YOLOv4-tiny
-    config_name = "yolov4-tiny.cfg"
+    vin_name = Path("varroa2.mp4")
 
     # Path der main.py Datei, über die settings.py aufgerufen wird
     cwd = Path.cwd()
@@ -15,16 +12,19 @@ class Settings():
     # Ordner der neuornalen Netze
     network_path = cwd / "network-data"
 
-    # Ordner der Eingabevideos
-    input_path = cwd / "input_videos"
+    # Ordner der Eingabedateien
+    input_path = cwd / "input"
 
-    # Ordner der Ausgabevideos
-    output_path = cwd / "output_videos"
+    # Ordner der Eingabevideos
+    vin_path = input_path / "videos"
+
+    # Ordner der Ausgabedateien
+    output_path = cwd / "output"
 
     # Startzeitpunkt der Videoanalyse in Frames
-    start_frame = 1150
+    start_frame = 0
     # Endzeitpunkt der Videoanalyse in Frames
-    end_frame = 1300
+    end_frame = float("inf")
 
     # nach Bienen untersuchter Bildausschnitt
     x0 = 0
@@ -32,24 +32,8 @@ class Settings():
     y0 = 500
     y1 = 800
 
-    # Minimal Bewertung zur Bienenerkennenung
-    bee_confidence_tresh = 0.8
-
-    # Minimal Bewertung zur Milbenerkennenung
-    vra_confidence_tresh = 0
-
     # Abstand der untersuchten Frames
     frame_dist = 2
-
-    # maximale Bewegungsdistanz einer Biene zwischen zwei untersuchten Frames
-    bee_dist_thresh = frame_dist * 40
-
-    # maximale Distanz zwischen mehreren Bounding Boxes einer Biene
-    # damit wird die mehrfache Erkennung einer Biene verhindert
-    bee_duplicate_dist = 30
-    
-    # minimale 8-Bit-Helligkeit einer Varroa
-    varroa_color_thresh = 180
 
     # Einstellungen zur Erstellung des editierten Videos
     alpha_overlay = 0.7
@@ -67,8 +51,8 @@ class Settings():
 
 
     # schreibe alle Videoclips, in denen Bienen sichtbar sind?
-    write_bee_clips = True
+    write_bee_clips = False
     # schreibe alle Videoclips, in denen infizierte Bienen sichtbar sind?
-    write_infected_clips = True
+    write_infected_clips = False
     # schreibe das gesamte editierte Video
     write_whole = True

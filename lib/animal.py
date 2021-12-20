@@ -1,10 +1,11 @@
-from lib.settings import Settings
+import lib.settings as se
 from lib.pos import Pos
+
 
 class Animal:
     '''Klasse zum Erstellen eines Tier-Objekts'''
 
-    def __init__(self, ctr, dim):
+    def __init__(self, ctr, dim,):
         # self.ctr ist der Mittelpunkt der Bounding Box der Biene
         self.ctr = ctr
         # self.dim ist das Tupel von (Höhe, Breite) der Biene
@@ -17,6 +18,6 @@ class Animal:
         pos0 = tuple(self.ctr[i] - self.dim[i] // 2 for i in range(2))
         pos1 = tuple(self.ctr[i] + self.dim[i] // 2 for i in range(2))
         self.pos0 = Pos(max(0, pos0[0]), max(0, pos0[1]))
-        self.pos1 = Pos(min(Settings.x1, pos1[0]), min(Settings.y1, pos1[1]))
+        self.pos1 = Pos(min(se.X1_ANALYSIS, pos1[0]), min(se.Y1_ANALYSIS, pos1[1]))
 
         

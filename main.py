@@ -1,4 +1,6 @@
-from lib.settings import Settings
+from pathlib import Path
+
+import lib.settings as se
 from lib.bee_detector import Bee_Detector
 from lib.vra_detector import Vra_Detector
 from lib.tracker import Tracker
@@ -13,6 +15,8 @@ def main():
     t0 = Timer("absolute")
     t0.begin()
 
+    se.init(Path.cwd() / "lib" / "settings.json")
+
     # Objekt zur Bienenerkennung
     bee_detector = Bee_Detector("bee_detector.weights", "yolov4-tiny.cfg")
 
@@ -23,16 +27,16 @@ def main():
     infected_counter = Counter("infected bees")
 
     for object_type in ["bees", "infected", "whole"]:
-        Video_Clipper.clear_dir(Settings.output_path / object_type)
+        Video_Clipper.clear_dir(se.OUTPUT_PATH / object_type)
 
-    for video in (Settings.vin_path).iterdir():
+    for video in (se.VIN_PATH).iterdir():
         if video.suffix == ".mp4":
             print(video)
             # Objekt zur Verfolgung der Bienen und Untersuchung auf Varroainfektionen
             tracker = Tracker(video, bee_detector, vra_detector)
 
             # lasse tracker laufen
-            tracker.run(Settings.start_frame, Settings.end_frame, Settings.frame_dist)
+            tracker.run(se.FRAME_DIST)
 
             bee_counter.sub_counter(tracker.bee_counter)
             infected_counter.sub_counter(tracker.infected_counter)

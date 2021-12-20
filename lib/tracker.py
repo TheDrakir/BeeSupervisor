@@ -1,6 +1,6 @@
 import cv2
 
-from lib.settings import Settings
+import lib.settings as se
 from lib.editor import Editor
 from lib.timer import Timer
 from lib.counter import Counter
@@ -10,13 +10,6 @@ from lib.video_clipper import Video_Clipper
 class Tracker:
     '''Klasse zur Verfolgung und Untersuchung von Bienen in einem Video'''
 
-    # maximale Bewegungsdistanz einer Biene zwischen zwei untersuchten Frames
-    bee_dist_thresh = Settings.frame_dist * 40
-
-    # maximale Distanz zwischen mehreren Bounding Boxes einer Biene
-    # damit wird die mehrfache Erkennung einer Biene verhindert
-    bee_duplicate_dist = 30
-
     def __init__(self, vin_path, bee_detector, vra_detector):
         self.vin_path = vin_path
 
@@ -24,6 +17,13 @@ class Tracker:
         self.bee_detector = bee_detector
         # setze den genutzten Vra_Detector
         self.vra_detector = vra_detector
+
+        # maximale Bewegungsdistanz einer Biene zwischen zwei untersuchten Frames
+        bee_dist_thresh = se.FRAME_DIST * 40
+
+        # maximale Distanz zwischen mehreren Bounding Boxes einer Biene
+        # damit wird die mehrfache Erkennung einer Biene verhindert
+        bee_duplicate_dist = 30
 
         # Bienen im vorherigen Videoeinzelbild
         self.prev_bees = []
@@ -39,9 +39,9 @@ class Tracker:
         
         self.set_vin()
 
-        self.vc_bees = Video_Clipper(self, "bees", apply=Settings.write_bee_clips)
-        self.vc_infected = Video_Clipper(self, "infected", apply=Settings.write_infected_clips)
-        self.vc_whole = Video_Clipper(self, "whole", apply=Settings.write_whole, active=True)
+        self.vc_bees = Video_Clipper(self, "bees", apply=se.WRITE_BEE_CLIPS)
+        self.vc_infected = Video_Clipper(self, "infected", apply=se.WRITE_INFECTED_CLIPS)
+        self.vc_whole = Video_Clipper(self, "whole", apply=se.WRITE_WHOLE, active=True)
         self.vc_whole.active = True
 
         self.vcs = [self.vc_bees, self.vc_infected, self.vc_whole]
@@ -54,20 +54,17 @@ class Tracker:
         self.fps = self.vin.get(cv2.CAP_PROP_FPS)
  
     
-
-    def run(self, frame0, frame1, frame_dist):
+    def run(self, frame_dist):
         '''
         lässt den Tracker über die Videoeinzelbilder des Videos laufen
 
-        :param frame0: Startbildnummer
-        :param frame1: Endbildnummer
         :param frame_dist: Abstand aufeinanderfolgender, untersuchter Einzelbilder
         '''
     
-        self.frame = frame0
+        self.frame = 0
         self.vin.set(cv2.CAP_PROP_POS_FRAMES, self.frame - 1)
 
-        while self.frame < frame1:
+        while True:
             for _ in range(frame_dist - 1):
                 self.vin.read()
             success, self.image = self.vin.read()
@@ -88,7 +85,7 @@ class Tracker:
         self.bees = []
 
 
-        self.cropped = self.image[Settings.y0 : Settings.y1, Settings.x0 : Settings.x1]
+        self.cropped = self.image[se.Y0_ANALYSIS : se.Y1_ANALYSIS, se.X0_ANALYSIS : se.X1_ANALYSIS]
         self.detected_bees = self.bee_detector.get_bees(self.cropped)
 
         for bee in self.prev_bees:
@@ -113,7 +110,7 @@ class Tracker:
         
         :param new_bee: hinzugefügte Biene
         '''
-        closest_dist = Tracker.bee_dist_thresh
+        closest_dist = se.MOVEMENT_THRESH * se.FRAME_DIST
         closest_bee = new_bee
 
         for prev_bee in self.prev_bees:
@@ -124,11 +121,11 @@ class Tracker:
                     closest_bee = prev_bee
 
         for bee in self.bees:
-            if bee.dist(new_bee) <= Tracker.bee_duplicate_dist:
+            if bee.dist(new_bee) <= se.DUPLICATE_THRESH:
                 return
 
         closest_bee.track(new_bee)
-        if closest_dist == Tracker.bee_dist_thresh:
+        if closest_dist == se.MOVEMENT_THRESH * se.FRAME_DIST:
             closest_bee.id = self.bee_counter.value
             self.bee_counter.increment()
         self.bees.append(closest_bee)

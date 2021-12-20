@@ -1,5 +1,3 @@
-from typing import Set
-from lib.settings import Settings
 from lib.animal import Animal
 
 

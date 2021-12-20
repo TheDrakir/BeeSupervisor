@@ -1,6 +1,5 @@
 import cv2
-import os
-from settings import Settings
+import lib.settings as se
 
 
 def get_images(video, frame_dist):
@@ -12,7 +11,7 @@ def get_images(video, frame_dist):
 	'''
 	images = []
 
-	capture = cv2.VideoCapture(Settings.input_dir + "/" + video)
+	capture = cv2.VideoCapture(se.INPUT_DIR + "/" + video)
 	frame = 0
 
 	while True:
@@ -21,7 +20,7 @@ def get_images(video, frame_dist):
 		if not success:
 			return images
 
-		cropped = image[Settings.y0 : Settings.y1, Settings.x0 : Settings.x1]
+		cropped = image[se.Y0_ANALYSIS : se.Y1_ANALYSIS, se.X0_ANALYSIS : se.X1_ANALYSIS]
 		
 		images.append(cropped)
 		

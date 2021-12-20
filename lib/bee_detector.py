@@ -1,6 +1,6 @@
 import cv2
 
-from lib.settings import Settings
+import lib.settings as se
 from lib.bee import Bee
 from lib.timer import Timer
 
@@ -11,9 +11,8 @@ class Bee_Detector:
     confidence_thresh = .9
 
     def __init__(self, weights, config):
-
         # lade das yolov4-tiny Netzwerk
-        self.network = cv2.dnn.readNet(str(Settings.network_path / weights), str(Settings.network_path / config))
+        self.network = cv2.dnn.readNet(str(se.NETWORK_PATH / weights), str(se.NETWORK_PATH / config))
 
         # definiere den Index der zu erkennenden Klassen des Netzwerks
         self.bee_ind = 0
@@ -45,7 +44,7 @@ class Bee_Detector:
         self.network.setInput(blob)
         outputs = self.network.forward(self.output_layers)
 
-        # erstelle bees, die Liste aller Bienen mit Scores über dem Threshhold aus settings.py
+        # erstelle bees, die Liste aller Bienen mit Scores über dem Threshhold
         bees = []
         for output in outputs:
             for detection in output:

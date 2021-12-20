@@ -1,58 +1,71 @@
 from pathlib import Path
+import json
 
-class Settings():
-    '''Klasse zum speichern und abrufen aller Nutzereingaben'''
+def init(input_settings_path):
+    with open(input_settings_path) as f:
+        data = json.load(f)
 
-    # Name des Eingabevideos
-    vin_name = Path("varroa2.mp4")
+    global INPUT_SETTINGS_PATH , WIDTH_FOR_DRAWING_ROI
+    global CWD, NETWORK_PATH, INPUT_PATH, VIN_PATH, OUTPUT_PATH
+    global MOVEMENT_THRESH, DUPLICATE_THRESH
+    global X0_ANALYSIS, X1_ANALYSIS, Y0_ANALYSIS, Y1_ANALYSIS
+    global FRAME_DIST
+    global HEALTHY_COLOR, INFECTED_COLOR
+    global DRAW_RECTANGLES, DARKEN_BACKGROUND, DRAW_EDITS
+    global WRITE_BEE_CLIPS, WRITE_INFECTED_CLIPS, WRITE_WHOLE
+
+    #
+    INPUT_SETTINGS_PATH = input_settings_path
+
+    
+    WIDTH_FOR_DRAWING_ROI = data["width_for_drawing_roi"]
 
     # Path der main.py Datei, über die settings.py aufgerufen wird
-    cwd = Path.cwd()
+    CWD = Path.cwd()
 
     # Ordner der neuornalen Netze
-    network_path = cwd / "network-data"
+    NETWORK_PATH = CWD / data["network_dir"]
 
     # Ordner der Eingabedateien
-    input_path = cwd / "input"
+    INPUT_PATH = CWD / data["input_dir"]
 
     # Ordner der Eingabevideos
-    vin_path = input_path / "videos"
+    VIN_PATH = INPUT_PATH / data["vin_dir"]
 
     # Ordner der Ausgabedateien
-    output_path = cwd / "output"
+    OUTPUT_PATH = CWD / data["output_dir"]
 
-    # Startzeitpunkt der Videoanalyse in Frames
-    start_frame = 0
-    # Endzeitpunkt der Videoanalyse in Frames
-    end_frame = float("inf")
+    # maximale zurückgelegte Distanz einer Biene pro Frame
+    MOVEMENT_THRESH = data["movement_thresh"]
+
+    # minimaler Abstand zwischen zwei verschiedenen Bienen
+    DUPLICATE_THRESH = data["duplicate_thresh"]
 
     # nach Bienen untersuchter Bildausschnitt
-    x0 = 0
-    x1 = 1920
-    y0 = 500
-    y1 = 800
+    X0_ANALYSIS = data["x0"]
+    X1_ANALYSIS = data["x1"]
+    Y0_ANALYSIS = data["y0"]
+    Y1_ANALYSIS = data["y1"]
 
     # Abstand der untersuchten Frames
-    frame_dist = 2
+    FRAME_DIST = data["frame_dist"]
 
     # Einstellungen zur Erstellung des editierten Videos
-    alpha_overlay = 0.7
-    healthy_color = (42, 219, 151)
-    infected_color = (0,51,204)
-    white = (255, 255, 255)
+    HEALTHY_COLOR = tuple(data["healthy_color"])
+    INFECTED_COLOR = tuple(data["infected_color"])
 
     # werden die Bounding Boxes der Bienen eingezeichnet?
-    draw_rectangles = True
+    DRAW_RECTANGLES = data["draw_rectangles"]
     # werden die Bounding Boxes der Bienen relativ zum Hintergrund erhellt?
-    darken_background = False
+    DARKEN_BACKGROUND = data["darken_background"]
     # werden irgendwelche Bildbearbeitungen im Ausgabevideo getätigt?
     # falls nicht, sinkt die Laufzeit dramatisch, weil das Video direkt extrahiert wird, ohne es zu de- und enkodieren
-    draw_edits = draw_rectangles or darken_background
+    DRAW_EDITS = DRAW_RECTANGLES or DARKEN_BACKGROUND
 
 
     # schreibe alle Videoclips, in denen Bienen sichtbar sind?
-    write_bee_clips = False
+    WRITE_BEE_CLIPS = data["write_bee_clips"]
     # schreibe alle Videoclips, in denen infizierte Bienen sichtbar sind?
-    write_infected_clips = False
+    WRITE_INFECTED_CLIPS = data["write_infected_clips"]
     # schreibe das gesamte editierte Video
-    write_whole = True
+    WRITE_WHOLE = data["write_whole"]

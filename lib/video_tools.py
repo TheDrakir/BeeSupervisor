@@ -1,9 +1,3 @@
-from typing import Set
-import cv2
-
-from lib.settings import Settings
-
-
 class Video_Tools:
     '''Klasse zum konvertieren zwischen Video-Zeiteinheiten'''
 

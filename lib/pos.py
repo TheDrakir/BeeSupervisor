@@ -1,4 +1,4 @@
-from lib.settings import Settings
+import lib.settings as se
 
 class Pos:
     def __init__(self, x, y):
@@ -14,4 +14,4 @@ class Pos:
 
     # konvertiert Koordinaten im untersuchten Bildausschnitt zu Koordinaten im Gesamtbild
     def decropped(self):
-        return Pos(self.x + Settings.x0, self.y + Settings.y0)
+        return Pos(self.x + se.X0_ANALYSIS, self.y + se.Y0_ANALYSIS)

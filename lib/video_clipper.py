@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Set
 
-from lib.settings import Settings
+import lib.settings as se
 from lib.video_tools import Video_Tools
 from lib.editor import Editor
 
@@ -14,7 +14,7 @@ class Video_Clipper:
 
     def __init__(self, tracker, object_type, apply=True, active=False):
         self.tracker = tracker
-        self.path = Settings.output_path / object_type
+        self.path = se.OUTPUT_PATH / object_type
         self.apply = apply
         self.active = active
 
@@ -42,9 +42,9 @@ class Video_Clipper:
     def open(self):
         self.start_frame = self.last_active_frame
         self.vout_path = self.path / "{}-{}.mp4".format(self.tracker.vin_path.stem, self.vt.get_time_stamp(self.last_active_frame))
-        if Settings.draw_edits:
+        if se.DRAW_EDITS:
             self.vout = cv2.VideoWriter()
-            fps = self.tracker.fps / Settings.frame_dist
+            fps = self.tracker.fps / se.FRAME_DIST
             dim = self.tracker.width, self.tracker.height
             fourcc = cv2.VideoWriter_fourcc(*'mp4v')
             self.vout.open(str(self.vout_path), fourcc, fps, dim, True)
@@ -52,13 +52,13 @@ class Video_Clipper:
 
     # schreibt das nächste Videoeinzelbild in das Ausgabevideo
     def write_frame(self):
-        if Settings.draw_edits:
+        if se.DRAW_EDITS:
             edited = self.editor.get_edited()
             self.vout.write(edited)
 
     # schreibt das Ausgabevideo in den Zielordner
     def release(self):
-        if Settings.draw_edits:
+        if se.DRAW_EDITS:
             self.vout.release()
         else:
             from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip

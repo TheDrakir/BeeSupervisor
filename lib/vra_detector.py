@@ -1,6 +1,6 @@
 import cv2
 
-from lib.settings import Settings
+import lib.settings as se
 from lib.animal import Animal
 
 
@@ -12,7 +12,7 @@ class Vra_Detector:
     def __init__(self, weights, config):
 
         # lade das yolov4-tiny Netzwerk
-        self.network = cv2.dnn.readNet(str(Settings.network_path / weights), str(Settings.network_path / config))
+        self.network = cv2.dnn.readNet(str(se.NETWORK_PATH / weights), str(se.NETWORK_PATH / config))
 
         # definiere den Index der zu erkennenden Klassen des Netzwerks
         self.vra_ind = 0

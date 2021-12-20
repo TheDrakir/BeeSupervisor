@@ -1,4 +1,5 @@
 class Counter:
+    '''Klasse zum Zählen der Vorkommnisse eines Ereignisses'''
     def __init__(self, name):
         self.name = name
         self.value = 0

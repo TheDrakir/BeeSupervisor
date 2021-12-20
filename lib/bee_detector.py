@@ -6,10 +6,11 @@ from lib.timer import Timer
 
 
 class Bee_Detector:
-    def __init__(self, weights, config):
+    '''Klasse zum Erkennen von Bienen'''
+    def __init__(self, weights):
 
         # lade das yolov4-tiny Netzwerk
-        self.network = cv2.dnn.readNet(str(Settings.network_path / weights), str(Settings.network_path / config))
+        self.network = cv2.dnn.readNet(str(Settings.network_path / weights), str(Settings.network_path / Settings.config_name))
 
         # definiere den Index der zu erkennenden Klassen des Netzwerks
         self.bee_ind = 0

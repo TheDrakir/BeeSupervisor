@@ -1,3 +1,4 @@
+from typing import Set
 from cv2 import displayOverlay
 from pathlib import Path
 
@@ -6,20 +7,33 @@ from lib.bee_detector import Bee_Detector
 from lib.vra_detector import Vra_Detector
 from lib.tracker import Tracker
 from lib.timer import Timer
-from lib.clip_video import clip_video
+from lib.video_clipper import Video_Clipper
 
 def main():
+    # t0 ist ein Timer für die gesamte main()-Funktion
     t0 = Timer("absolute")
     t0.begin()
 
-    bee_detector = Bee_Detector("bee_detector.weights", "yolov4-tiny.cfg")
-    vra_detector = Vra_Detector("vra_detector.weights", "yolov4-tiny.cfg")
+    # Objekt zur Bienenerkennung
+    bee_detector = Bee_Detector("bee_detector.weights")
 
+    # Objekt zur Milbenerkennung
+    vra_detector = Vra_Detector("vra_detector.weights")
 
+    # Objekt zur Verfolgung der Bienen und Untersuchung auf Varroainfektionen
     tracker = Tracker(Settings.input_path / Settings.vin_name, bee_detector, vra_detector)
-    tracker.run(Settings.start_time, Settings.end_time, Settings.frame_dist)
 
-    clip_video(tracker)
+    # Objekt zum schreiben der von tracker generierten Clips
+    vc = Video_Clipper(tracker)
+
+    # leere den Ausgabeordner
+    vc.clear()
+
+    # lasse tracker laufen
+    tracker.run(Settings.start_frame, Settings.end_frame, Settings.frame_dist)
+
+    # schreibe alle durch den tracker generierten Clips
+    vc.clip()
 
     print(tracker.bee_counter)
     print(tracker.infected_counter)
@@ -30,4 +44,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    

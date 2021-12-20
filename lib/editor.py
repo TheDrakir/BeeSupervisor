@@ -6,17 +6,18 @@ from lib.settings import Settings
 from lib.video_tools import Video_Tools
 
 class Editor:
+    '''Klasse zum editieren von Bildern'''
     
     # gibt das editierte Bild zum Eingabebild zurück
-    # Bildzahl im Video: frame, Bienen: bees
     @staticmethod
-    def get_edited(image, frame, bees):
+    def get_edited(image, bees):
         edited = image.copy()
         if Settings.darken_background:
             mask = np.full(image.shape[:2] + (1,), 0.25, np.float)
         for bee in bees:
             if Settings.draw_rectangles:
                 cv2.rectangle(edited, Editor.decrop_pos(bee.pos0), Editor.decrop_pos(bee.pos1), Editor.get_color(bee), 2)
+                cv2.putText(edited, str(bee.id), Editor.decrop_pos(bee.pos0), cv2.FONT_HERSHEY_SIMPLEX, 1, Editor.get_color(bee), 2, 2)
             if Settings.darken_background:
                 cv2.rectangle(mask, Editor.decrop_pos(bee.pos0), Editor.decrop_pos(bee.pos1), 1, -1)
                 cv2.rectangle(mask, Editor.decrop_pos(bee.pos0), Editor.decrop_pos(bee.pos1), 1, 2)

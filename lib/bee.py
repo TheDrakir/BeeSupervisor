@@ -3,6 +3,7 @@ from lib.settings import Settings
 
 
 class Bee:
+    '''Klasse zum Erstellen eines Bienen-Objekts'''
     def __init__(self, ctr, dim):
         # self.ctr ist der Mittelpunkt der Bounding Box der Biene
         self.ctr = ctr

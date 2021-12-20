@@ -1,22 +1,30 @@
 from pathlib import Path
 
 class Settings():
+    '''Klasse zum speichern aller Nutzereingaben'''
+
     # Name des Eingabevideos
     vin_name = "varroa2.mp4"
 
+    # Name der Konfigurationsdatei von YOLOv4-tiny
+    config_name = "yolov4-tiny.cfg"
+
+    # Path der main.py Datei, über die settings.py aufgerufen wird
+    cwd = Path.cwd()
+
     # Ordner der neuornalen Netze
-    network_path = Path("D:\\SemiABI\\SemiCode\\network-data")
+    network_path = cwd / "network-data"
 
     # Ordner der Eingabevideos
-    input_path = Path("D:\\SemiABI\\SemiCode\\input_videos")
+    input_path = cwd / "input_videos"
 
     # Ordner der Ausgabevideos
-    output_path = Path("D:\\SemiABI\\SemiCode\\output_videos")
+    output_path = cwd / "output_videos"
 
-    # Startzeitpunkt der Videoanalyse in Sekunden
-    start_time = 0
-    # Endzeitpunkt der Videoanalyse in Sekunden
-    end_time = 300
+    # Startzeitpunkt der Videoanalyse in Frames
+    start_frame = 1000
+    # Endzeitpunkt der Videoanalyse in Frames
+    end_frame = 2000
 
     # nach Bienen untersuchter Bildausschnitt
     x0 = 0
@@ -56,7 +64,11 @@ class Settings():
     # werden irgendwelche Bildbearbeitungen im Ausgabevideo getätigt?
     # falls nicht, sinkt die Laufzeit dramatisch, weil das Video direkt extrahiert wird, ohne es zu de- und enkodieren
     draw_edits = draw_rectangles or darken_background
+
+
     # schreibe alle Videoclips, in denen Bienen sichtbar sind?
     write_bee_clips = True
     # schreibe alle Videoclips, in denen infizierte Bienen sichtbar sind?
     write_infected_clips = False
+    # schreibe das gesamte editierte Video
+    write_whole_edit = False

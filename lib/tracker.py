@@ -7,13 +7,13 @@ from lib.counter import Counter
 
 
 class Tracker:
+    '''Klasse zur Verfolgung und Untersuchung von Bienen in einem Video'''
+
     def __init__(self, vin_path, bee_detector, vra_detector, vout_path=None):
         self.vin_path = vin_path
-        if vout_path is None:
-            self.write = False
-        else:
-            self.vout_path = vout_path
-            self.write = True
+        self.vout_path = vout_path
+        if self.vout_path is None and Settings.write_whole_edit:
+            self.vout_path = Settings.output_path / "whole" / "clip_from-00_00.mp4"
 
         # setze den genutzten Bee_Detector
         self.bee_detector = bee_detector
@@ -43,19 +43,18 @@ class Tracker:
         self.vin = cv2.VideoCapture(str(self.vin_path))
         self.height = int(self.vin.get(cv2.CAP_PROP_FRAME_HEIGHT))
         self.width = int(self.vin.get(cv2.CAP_PROP_FRAME_WIDTH))
-        self.frame_rate = self.vin.get(cv2.CAP_PROP_FPS) 
+        self.fps = self.vin.get(cv2.CAP_PROP_FPS)
  
     # setze das Ausgabevideo
-    def set_vout(self, frame0):
+    def set_vout(self):
         self.vout = cv2.VideoWriter()
         self.dim = (self.width, self.height)
-        self.fps = self.vin.get(cv2.CAP_PROP_FPS)
         self.fourcc = cv2.VideoWriter_fourcc(*'mp4v')
 
     # laufe den Tracker über das Video in der Frame-range (frame0, frame1, frame_dist)
     def run(self, frame0, frame1, frame_dist):
-        if self.write:
-            self.set_vout(frame0)
+        if self.vout_path is not None:
+            self.set_vout()
             self.vout.open(str(self.vout_path), self.fourcc, self.fps, self.dim, True)
         
         
@@ -70,7 +69,7 @@ class Tracker:
                 break
             self.track_image(image)
             self.frame += frame_dist
-        if self.write:
+        if self.vout_path is not None:
             self.vout.release()
 
     # tracke die Bienen im aktuellen Videoeinzelbild bezüglich des vorherigen
@@ -90,8 +89,8 @@ class Tracker:
            self.set_infected(bee)
         if self.bees:
             self.bee_frames.append(self.frame)
-        if self.write:
-            edited = Editor.get_edited(image, self.frame, self.bees)
+        if self.vout_path is not None:
+            edited = Editor.get_edited(image, self.bees)
             self.vout.write(edited)
 
     # füge eine Biene zu self.bees hinzu

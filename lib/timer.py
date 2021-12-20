@@ -1,6 +1,8 @@
 from time import perf_counter
 
 class Timer:
+    '''Klasse zum messen des Zeitaufwands eines Vorgangs'''
+
     def __init__(self, name):
         self.time = 0
         self.name = name

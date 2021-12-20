@@ -6,10 +6,11 @@ from lib.bee import Bee
 
 
 class Vra_Detector:
-    def __init__(self, weights, config):
+    '''Klasse zur Untersuchung von Bienen auf eine Varroa-Infektion'''
+    def __init__(self, weights):
 
         # lade das yolov4-tiny Netzwerk
-        self.network = cv2.dnn.readNet(str(Settings.network_path / weights), str(Settings.network_path / config))
+        self.network = cv2.dnn.readNet(str(Settings.network_path / weights), str(Settings.network_path / Settings.config_name))
 
         # definiere den Index der zu erkennenden Klassen des Netzwerks
         self.vra_ind = 0

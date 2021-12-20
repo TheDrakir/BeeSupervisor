@@ -7,6 +7,7 @@ from lib.timer import Timer
 
 class Bee_Detector:
     '''Klasse zum Erkennen von Bienen'''
+
     def __init__(self, weights):
 
         # lade das yolov4-tiny Netzwerk
@@ -23,6 +24,11 @@ class Bee_Detector:
 
 
     def get_bees(self, image):
+        '''
+        get_bees gibt die Bounding Boxes aller Bienen zurück.
+        
+        :param image: untersuchtes Bild
+        '''
         # definiere die Höhe, Breite von image
         h, w, _ = image.shape
 

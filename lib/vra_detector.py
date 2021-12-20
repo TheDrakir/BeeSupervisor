@@ -1,8 +1,7 @@
 import cv2
 
 from lib.settings import Settings
-from lib.timer import Timer
-from lib.bee import Bee
+from lib.animal import Animal
 
 
 class Vra_Detector:
@@ -22,34 +21,27 @@ class Vra_Detector:
         self.output_layers = [layer_names[i[0] - 1] for i in self.network.getUnconnectedOutLayers()]
 
 
-    def contains_vra(self, image):
-        return False
+    def get_vra(self, image):
+        cv2.imshow("image", image)
+        cv2.waitKey(0)
+        h, w, _ = image.shape
 
-        # self.t0.begin()
-        # h, w, _ = image.shape
-
-        # # Milbenerkennung
-        # channel_scalar = 1 / 255
-        # new_size = (416, 416)
-        # channel_subtrahend = (0, 0, 0)
+        # Milbenerkennung
+        channel_scalar = 1 / 255
+        new_size = (416, 416)
+        channel_subtrahend = (0, 0, 0)
         
-        # blob = cv2.dnn.blobFromImage(image, channel_scalar, new_size, channel_subtrahend, swapRB=True, crop=False)
+        blob = cv2.dnn.blobFromImage(image, channel_scalar, new_size, channel_subtrahend, swapRB=True, crop=False)
 
-        # self.network.setInput(blob)
-        # outputs = self.network.forward(self.output_layers)
+        self.network.setInput(blob)
+        outputs = self.network.forward(self.output_layers)
 
-        # for output in outputs:
-        #     for detection in output:
-        #         # Showing informations on the screen
-        #         confidence = detection[5 + self.vra_ind]
-        #         if confidence > Settings.bee_confidence_tresh:
-        #             print(confidence)
-        #             ctr = int(detection[0] * w), int(detection[1] * h)
-        #             dim = int(detection[2] * w), int(detection[3] * h)
-        #             cv2.rectangle(image, (ctr[0] - dim[0], ctr[1] - dim[1]), (ctr[0] + dim[0], ctr[1] + dim[1]), Settings.red)
-
-        #             cv2.imshow("image", image)
-        #             cv2.waitKey(0)
-        #             cv2.destroyAllWindows()
-        #             return True
-        # return False
+        for output in outputs:
+            for detection in output:
+                # Showing informations on the screen
+                confidence = detection[5 + self.vra_ind]
+                if confidence > .8:
+                    ctr = int(detection[0] * w), int(detection[1] * h)
+                    dim = int(detection[2] * w), int(detection[3] * h)
+                    return Animal (ctr, dim)
+        return None

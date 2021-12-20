@@ -1,7 +1,3 @@
-from typing import Set
-from cv2 import displayOverlay
-from pathlib import Path
-
 from lib.settings import Settings
 from lib.bee_detector import Bee_Detector
 from lib.vra_detector import Vra_Detector
@@ -10,6 +6,8 @@ from lib.timer import Timer
 from lib.video_clipper import Video_Clipper
 
 def main():
+    '''die Hauptfunktion, über die das gesamte Programm ausgeführt wird'''
+
     # t0 ist ein Timer für die gesamte main()-Funktion
     t0 = Timer("absolute")
     t0.begin()
@@ -42,5 +40,6 @@ def main():
     print(t0)
     
 
+# falls main.py direkt ausgeführt wurde, rufe die Hauptfunktion auf
 if __name__ == "__main__":
     main()

@@ -3,8 +3,13 @@ import os
 from settings import Settings
 
 
-# gibt jedes Videoeinzelbild von video, sodass frame_dist dessen Frame-Zahl teilt, zurück
 def get_images(video, frame_dist):
+	'''
+	gibt jedes k-te Videoeinzelbild zurück
+	
+	:param video: Video der Bilder
+	:param frame-dist: Abstand zwischen zwei zurückgegebenen Bildern
+	'''
 	images = []
 
 	capture = cv2.VideoCapture(Settings.input_dir + "/" + video)

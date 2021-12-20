@@ -22,9 +22,9 @@ class Settings():
     output_path = cwd / "output_videos"
 
     # Startzeitpunkt der Videoanalyse in Frames
-    start_frame = 1000
+    start_frame = 1150
     # Endzeitpunkt der Videoanalyse in Frames
-    end_frame = 2000
+    end_frame = 1300
 
     # nach Bienen untersuchter Bildausschnitt
     x0 = 0
@@ -58,7 +58,7 @@ class Settings():
     white = (255, 255, 255)
 
     # werden die Bounding Boxes der Bienen eingezeichnet?
-    draw_rectangles = False
+    draw_rectangles = True
     # werden die Bounding Boxes der Bienen relativ zum Hintergrund erhellt?
     darken_background = False
     # werden irgendwelche Bildbearbeitungen im Ausgabevideo getätigt?
@@ -69,6 +69,6 @@ class Settings():
     # schreibe alle Videoclips, in denen Bienen sichtbar sind?
     write_bee_clips = True
     # schreibe alle Videoclips, in denen infizierte Bienen sichtbar sind?
-    write_infected_clips = False
+    write_infected_clips = True
     # schreibe das gesamte editierte Video
     write_whole_edit = False

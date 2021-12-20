@@ -8,19 +8,27 @@ from lib.video_tools import Video_Tools
 class Editor:
     '''Klasse zum editieren von Bildern'''
     
-    # gibt das editierte Bild zum Eingabebild zurück
+
     @staticmethod
     def get_edited(image, bees):
+        '''
+       gibt ein editiertes Bild für das Ausgabevideo auf Basis der Einstellungen aus settings.py zurück
+        
+        :param image: das zu editierende Bild
+        :param bees: die Bienen im zu editierenden Bild
+        '''
         edited = image.copy()
         if Settings.darken_background:
             mask = np.full(image.shape[:2] + (1,), 0.25, np.float)
         for bee in bees:
             if Settings.draw_rectangles:
-                cv2.rectangle(edited, Editor.decrop_pos(bee.pos0), Editor.decrop_pos(bee.pos1), Editor.get_color(bee), 2)
-                cv2.putText(edited, str(bee.id), Editor.decrop_pos(bee.pos0), cv2.FONT_HERSHEY_SIMPLEX, 1, Editor.get_color(bee), 2, 2)
+                cv2.rectangle(edited, tuple(bee.pos0.decropped()), tuple(bee.pos1.decropped()), Editor.get_color(bee), 2)
+                cv2.putText(edited, str(bee.id), tuple(bee.pos0.decropped()), cv2.FONT_HERSHEY_SIMPLEX, 1, Editor.get_color(bee), 2, 2)
+                if bee.infected:
+                    cv2.rectangle(edited, tuple((bee.pos0 + bee.vra.pos0).decropped()), tuple((bee.pos0 + bee.vra.pos1).decropped()), Editor.get_color(bee), 2)
             if Settings.darken_background:
-                cv2.rectangle(mask, Editor.decrop_pos(bee.pos0), Editor.decrop_pos(bee.pos1), 1, -1)
-                cv2.rectangle(mask, Editor.decrop_pos(bee.pos0), Editor.decrop_pos(bee.pos1), 1, 2)
+                cv2.rectangle(mask, tuple(bee.pos0.decropped()), tuple(bee.pos1.decropped()), 1, -1)
+                cv2.rectangle(mask, tuple(bee.pos0.decropped()), tuple(bee.pos1.decropped()), 1, 2)
         if Settings.darken_background:
             edited = (edited * mask).astype(np.uint8)
         if Settings.draw_rectangles:
@@ -40,8 +48,3 @@ class Editor:
     @staticmethod
     def get_cropped_bee(image, bee):
         return image[Settings.y0 : , Settings.x0 : ][bee.pos0[1] : bee.pos1[1], bee.pos0[0] : bee.pos1[0]]
-        
-    # konvertiert Koordinaten im untersuchten Bildausschnitt zu Koordinaten im Gesamtbild
-    @staticmethod
-    def decrop_pos(pos):
-        return int(pos[0] + Settings.x0), int(pos[1] + Settings.y0)

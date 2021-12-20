@@ -24,12 +24,14 @@ class Tracker:
         self.prev_bees = []
         # Bienen im aktuellen Videoeinzelbild
         self.bees = []
+        # infizierte Bienen im aktuellen Videoeinzelbild
+        self.infected_bees = []
 
 
         # Videoeinzelbildzahlen, zu denen eine Biene erkannt wird
         self.bee_frames = []
-        # Videoeinzelbildzahlen, zu denen eine Varroamilbe erkannt wird
-        self.vra_frames = []
+        # Videoeinzelbildzahlen, zu denen eine infizierte Biene erkannt wird
+        self.infected_frames = []
 
         # Zähler der bisher erkannten Bienen
         self.bee_counter = Counter("bees")
@@ -51,8 +53,14 @@ class Tracker:
         self.dim = (self.width, self.height)
         self.fourcc = cv2.VideoWriter_fourcc(*'mp4v')
 
-    # laufe den Tracker über das Video in der Frame-range (frame0, frame1, frame_dist)
     def run(self, frame0, frame1, frame_dist):
+        '''
+        lässt den Tracker über die Videoeinzelbilder des Videos laufen
+
+        :param frame0: Startbildnummer
+        :param frame1: Endbildnummer
+        :param frame_dist: Abstand aufeinanderfolgender, untersuchter Einzelbilder
+        '''
         if self.vout_path is not None:
             self.set_vout()
             self.vout.open(str(self.vout_path), self.fourcc, self.fps, self.dim, True)
@@ -72,8 +80,12 @@ class Tracker:
         if self.vout_path is not None:
             self.vout.release()
 
-    # tracke die Bienen im aktuellen Videoeinzelbild bezüglich des vorherigen
     def track_image(self, image):
+        '''
+        erkenne alle Bienen aus dem Bild, tracke sie zu Bienen aus dem vorherigen Bild, untersuche alle Bienen im Bild auf eine Infektion
+
+        :param image: zu untersuchendes Bild
+        '''
         self.prev_bees = self.bees
         self.bees = []
 
@@ -85,8 +97,11 @@ class Tracker:
             bee.prev_ctr = None
         for detected_bee in self.detected_bees:
             self.add_bee(detected_bee)
+        self.infected_bees = []
         for bee in self.bees:
            self.set_infected(bee)
+        if self.infected_bees:
+            self.infected_frames.append(self.frame)
         if self.bees:
             self.bee_frames.append(self.frame)
         if self.vout_path is not None:
@@ -96,6 +111,10 @@ class Tracker:
     # füge eine Biene zu self.bees hinzu
     # tracke sie zum vorherigen Videoeinzelbild, falls sie dort schon sichtbar war
     def add_bee(self, new_bee):
+        '''
+        füge eine Biene zu der Liste der Bienen im aktuellen Videoeinzelbild hinzu und tracke sie ggf. zum vorherigen Bild
+        
+        :param new_bee: hinzugefügte Biene'''
         closest_dist = Settings.bee_dist_thresh
         closest_bee = new_bee
 
@@ -116,15 +135,16 @@ class Tracker:
             self.bee_counter.increment()
         self.bees.append(closest_bee)
 
-    # setze den Infektionsstatus der Biene bee auf True
+    # setze den Infektionsstatus der Biene bee
     def set_infected(self, bee):
+        cropped_bee = self.cropped[bee.pos0.y : bee.pos1.y, bee.pos0.x : bee.pos1.x]
+        vra = self.vra_detector.get_vra(cropped_bee)
+        if vra is not None:
+            if not bee.infected:
+                self.infected_counter.increment()
+            bee.infect(vra)
         if bee.infected:
-            return
-        cropped_bee = self.cropped[bee.pos0[1] : bee.pos1[1], bee.pos0[0] : bee.pos1[0]]
-        if self.vra_detector.contains_vra(cropped_bee):
-            bee.infect()
-            self.vra_frames.append(self.frame)
-            self.infected_counter.increment()
+            self.infected_bees.append(bee)
 
     # schreibe ein geschnittenes Video der Frame-range (frame0, frame1) nach vout_path
     def write_cutted(self, frame0, frame1, vout_path):

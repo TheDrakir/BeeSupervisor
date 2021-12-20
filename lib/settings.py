@@ -71,4 +71,4 @@ class Settings():
     # schreibe alle Videoclips, in denen infizierte Bienen sichtbar sind?
     write_infected_clips = True
     # schreibe das gesamte editierte Video
-    write_whole_edit = False
+    write_whole = True

@@ -22,7 +22,6 @@ class Vra_Detector:
 
 
     def get_vra(self, image):
-        cv2.imshow("image", image)
         cv2.waitKey(0)
         h, w, _ = image.shape
 
@@ -40,8 +39,11 @@ class Vra_Detector:
             for detection in output:
                 # Showing informations on the screen
                 confidence = detection[5 + self.vra_ind]
+                if confidence > 0:
+                    print(confidence)
                 if confidence > .8:
                     ctr = int(detection[0] * w), int(detection[1] * h)
                     dim = int(detection[2] * w), int(detection[3] * h)
-                    return Animal (ctr, dim)
+                    return Animal(ctr, dim)
+        cv2.imshow("image", image)
         return None

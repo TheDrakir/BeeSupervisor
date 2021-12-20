@@ -4,16 +4,14 @@ from lib.settings import Settings
 from lib.editor import Editor
 from lib.timer import Timer
 from lib.counter import Counter
+from lib.video_clipper import Video_Clipper
 
 
 class Tracker:
     '''Klasse zur Verfolgung und Untersuchung von Bienen in einem Video'''
 
-    def __init__(self, vin_path, bee_detector, vra_detector, vout_path=None):
+    def __init__(self, vin_path, bee_detector, vra_detector):
         self.vin_path = vin_path
-        self.vout_path = vout_path
-        if self.vout_path is None and Settings.write_whole_edit:
-            self.vout_path = Settings.output_path / "whole" / "clip_from-00_00.mp4"
 
         # setze den genutzten Bee_Detector
         self.bee_detector = bee_detector
@@ -27,18 +25,19 @@ class Tracker:
         # infizierte Bienen im aktuellen Videoeinzelbild
         self.infected_bees = []
 
-
-        # Videoeinzelbildzahlen, zu denen eine Biene erkannt wird
-        self.bee_frames = []
-        # Videoeinzelbildzahlen, zu denen eine infizierte Biene erkannt wird
-        self.infected_frames = []
-
         # Zähler der bisher erkannten Bienen
         self.bee_counter = Counter("bees")
         # Zähler der bisher erkannten infizierten Bienen
         self.infected_counter = Counter("infected bees")
         
         self.set_vin()
+
+        self.vc_bees = Video_Clipper(self, "bees", apply=Settings.write_bee_clips)
+        self.vc_infected = Video_Clipper(self, "infected", apply=Settings.write_infected_clips)
+        self.vc_whole = Video_Clipper(self, "whole", apply=Settings.write_whole, active=True)
+        self.vc_whole.active = True
+
+        self.vcs = [self.vc_bees, self.vc_infected, self.vc_whole]
 
     # setze das Eingabevideo
     def set_vin(self):
@@ -47,11 +46,7 @@ class Tracker:
         self.width = int(self.vin.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.fps = self.vin.get(cv2.CAP_PROP_FPS)
  
-    # setze das Ausgabevideo
-    def set_vout(self):
-        self.vout = cv2.VideoWriter()
-        self.dim = (self.width, self.height)
-        self.fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    
 
     def run(self, frame0, frame1, frame_dist):
         '''
@@ -61,36 +56,32 @@ class Tracker:
         :param frame1: Endbildnummer
         :param frame_dist: Abstand aufeinanderfolgender, untersuchter Einzelbilder
         '''
-        if self.vout_path is not None:
-            self.set_vout()
-            self.vout.open(str(self.vout_path), self.fourcc, self.fps, self.dim, True)
-        
-        
+    
         self.frame = frame0
         self.vin.set(cv2.CAP_PROP_POS_FRAMES, self.frame - 1)
 
         while self.frame < frame1:
             for _ in range(frame_dist - 1):
                 self.vin.read()
-            success, image = self.vin.read()
+            success, self.image = self.vin.read()
             if not success:
                 break
-            self.track_image(image)
+            self.track_image()
             self.frame += frame_dist
-        if self.vout_path is not None:
-            self.vout.release()
+        
+        for vc in self.vcs:
+            if vc.writing:
+                vc.release()
 
-    def track_image(self, image):
+    def track_image(self):
         '''
         erkenne alle Bienen aus dem Bild, tracke sie zu Bienen aus dem vorherigen Bild, untersuche alle Bienen im Bild auf eine Infektion
-
-        :param image: zu untersuchendes Bild
         '''
         self.prev_bees = self.bees
         self.bees = []
 
 
-        self.cropped = image[Settings.y0 : Settings.y1, Settings.x0 : Settings.x1]
+        self.cropped = self.image[Settings.y0 : Settings.y1, Settings.x0 : Settings.x1]
         self.detected_bees = self.bee_detector.get_bees(self.cropped)
 
         for bee in self.prev_bees:
@@ -100,13 +91,12 @@ class Tracker:
         self.infected_bees = []
         for bee in self.bees:
            self.set_infected(bee)
-        if self.infected_bees:
-            self.infected_frames.append(self.frame)
-        if self.bees:
-            self.bee_frames.append(self.frame)
-        if self.vout_path is not None:
-            edited = Editor.get_edited(image, self.bees)
-            self.vout.write(edited)
+
+        self.vc_bees.active = bool(self.bees)
+        self.vc_infected.active = bool(self.infected_bees)
+
+        for vc in self.vcs:
+            vc.update()
 
     # füge eine Biene zu self.bees hinzu
     # tracke sie zum vorherigen Videoeinzelbild, falls sie dort schon sichtbar war
@@ -145,8 +135,3 @@ class Tracker:
             bee.infect(vra)
         if bee.infected:
             self.infected_bees.append(bee)
-
-    # schreibe ein geschnittenes Video der Frame-range (frame0, frame1) nach vout_path
-    def write_cutted(self, frame0, frame1, vout_path):
-        write_tracker = Tracker(self.vin_path, self.bee_detector, self.vra_detector, vout_path)
-        write_tracker.run(frame0, frame1, 1)

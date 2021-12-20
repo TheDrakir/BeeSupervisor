@@ -16,22 +16,13 @@ def main():
     bee_detector = Bee_Detector("bee_detector.weights")
 
     # Objekt zur Milbenerkennung
-    vra_detector = Vra_Detector("vra_detector.weights")
+    vra_detector = Vra_Detector("hii.weights")
 
     # Objekt zur Verfolgung der Bienen und Untersuchung auf Varroainfektionen
     tracker = Tracker(Settings.input_path / Settings.vin_name, bee_detector, vra_detector)
 
-    # Objekt zum schreiben der von tracker generierten Clips
-    vc = Video_Clipper(tracker)
-
-    # leere den Ausgabeordner
-    vc.clear()
-
     # lasse tracker laufen
     tracker.run(Settings.start_frame, Settings.end_frame, Settings.frame_dist)
-
-    # schreibe alle durch den tracker generierten Clips
-    vc.clip()
 
     print(tracker.bee_counter)
     print(tracker.infected_counter)

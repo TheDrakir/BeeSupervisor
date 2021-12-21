@@ -54,6 +54,7 @@ def main():
 
     print(bee_counter)
     print(infected_counter)
+    print(seconds_counter)
     
     t0.end()
     print(t0)

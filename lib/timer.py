@@ -22,7 +22,7 @@ class Timer:
 
     # gibt den String zurück, der den Namen und die Laufzeit des Timers enthält
     def __str__(self):
-        return "total{:<23} {}".format("("+self.name+"):", Timer.to_time_str(self.eval()))
+        return "timer{:<23} {}".format("("+self.name+"):", Timer.to_time_str(self.eval()))
 
     # gibt den String zurück, der den Namen und die durchschnittliche Laufzeit des Timers enthält
     def str_avg(self):

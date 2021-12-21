@@ -17,11 +17,8 @@ class Vra_Detector:
         # definiere den Index der zu erkennenden Klassen des Netzwerks
         self.vra_ind = 0
 
-        # die Namen der Schichten des Netzwerks
-        layer_names = self.network.getLayerNames()
-
-        # List der Ausgabeschichten
-        self.output_layers = [layer_names[i[0] - 1] for i in self.network.getUnconnectedOutLayers()]
+        # Liste der Ausgabeschichten
+        self.output_layers = self.network.getUnconnectedOutLayersNames()
 
 
     def get_vra(self, image):

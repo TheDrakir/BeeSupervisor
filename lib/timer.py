@@ -7,19 +7,22 @@ class Timer:
         self.time = 0
         self.name = name
         self.call_count = 0
+        self.running = False
 
     # starte den Timer
     def begin(self):
         self.time -= perf_counter()
         self.call_count += 1
+        self.running = True
 
     # stoppe den Timer
     def end(self):
         self.time += perf_counter()
+        self.running = False
 
     # gibt den String zurück, der den Namen und die Laufzeit des Timers enthält
     def __str__(self):
-        return "total{:<23} {}".format("("+self.name+"):", Timer.to_time_str(self.time))
+        return "total{:<23} {}".format("("+self.name+"):", Timer.to_time_str(self.eval()))
 
     # gibt den String zurück, der den Namen und die durchschnittliche Laufzeit des Timers enthält
     def str_avg(self):
@@ -30,7 +33,18 @@ class Timer:
         if not self.call_count:
             return 0
         else:
-            return self.time / self.call_count
+            return self.eval() / self.call_count
+
+    def eval(self):
+        t = self.time
+        if self.running:
+            t += perf_counter()
+        return t
+
+    def reset(self):
+        self.time = 0
+        self.call_count = 0
+        self.running = False
 
     # erstelle einen aus der Zeit t, wobei automatisch eine passende EInheit gewählt wird
     @staticmethod

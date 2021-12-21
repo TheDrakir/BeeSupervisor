@@ -9,9 +9,10 @@ import lib.settings as se
 class ROI_Setter:
     def __init__(self, vin_path):
         self.vin_path = vin_path
+        self.file_path = se.INPUT_SETTINGS_PATH
 
     def set_roi(self):
-        with open(se.INPUT_SETTINGS_PATH) as f:
+        with open(self.file_path) as f:
             self.data = json.load(f)
         vin = cv2.VideoCapture(str(self.vin_path))
         _, self.image = vin.read()
@@ -28,7 +29,7 @@ class ROI_Setter:
         self.iy = -1
 
 
-        win_name = "Draw the rectangle to be analyzed!"
+        win_name = "Draw the region of interest!"
         cv2.namedWindow(win_name)
         cv2.setMouseCallback(win_name, self.update)
         while True:
@@ -36,13 +37,7 @@ class ROI_Setter:
             # wait 5 seconds then wait for ESC key
             if cv2.waitKey(5) & 0xFF == 27:
                 break
-        cv2.destroyAllWindows()
-        
-
-        self.data["x0"] = 0
-
-        with open(se.INPUT_SETTINGS_PATH, "w") as f:
-            json.dump(self.data, f, sort_keys=True, indent=4)
+        cv2.destroyAllWindows() 
 
     def stop_drawing(self, x, y):
         self.is_drawing = False
@@ -56,7 +51,7 @@ class ROI_Setter:
         self.data["x1"] = min(int(max(x, self.ix) / self.r), self.w)
         self.data["y0"] = max(int(min(y, self.iy) / self.r), 0)
         self.data["y1"] = min(int(max(y, self.iy) / self.r), self.h)
-        with open(se.INPUT_SETTINGS_PATH, "w") as f:
+        with open(self.file_path, "w") as f:
             json.dump(self.data, f, indent=4, sort_keys=True)
 
         cv2.rectangle(self.edited0, (self.ix, self.iy), (x, y), se.HEALTHY_COLOR, 2)
@@ -82,7 +77,7 @@ class ROI_Setter:
 
 
 def main():
-    se.init(Path.cwd() / "lib" / "settings.json")
+    se.init(Path.cwd() / "input" / "settings.json")
 
     rs = ROI_Setter(list((se.VIN_PATH).iterdir())[0])
     

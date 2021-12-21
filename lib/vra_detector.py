@@ -7,7 +7,7 @@ from lib.animal import Animal
 class Vra_Detector:
     '''Klasse zur Untersuchung von Bienen auf eine Varroa-Infektion'''
 
-    confidence_thresh = .8
+    confidence_thresh = .93
 
     def __init__(self, weights, config):
 
@@ -30,6 +30,7 @@ class Vra_Detector:
 
         # Milbenerkennung
         channel_scalar = 1 / 255
+        # Dimensionen des Eingabebilds des neuronalen Netzes
         new_size = (416, 416)
         channel_subtrahend = (0, 0, 0)
         

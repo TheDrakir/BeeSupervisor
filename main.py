@@ -1,4 +1,5 @@
 from pathlib import Path
+from lib.output_writer import Output_Writer
 
 import lib.settings as se
 from lib.bee_detector import Bee_Detector
@@ -15,16 +16,24 @@ def main():
     t0 = Timer("absolute")
     t0.begin()
 
-    se.init(Path.cwd() / "lib" / "settings.json")
+    se.init(Path.cwd() / "input" / "settings.json")
 
     # Objekt zur Bienenerkennung
     bee_detector = Bee_Detector("bee_detector.weights", "yolov4-tiny.cfg")
 
     # Objekt zur Milbenerkennung
-    vra_detector = Vra_Detector("custom-yolov4-tiny-detector_best.weights", "yolov4-tiny.cfg")
+    vra_detector = Vra_Detector("custom-yolov4-tiny-detector_4000.weights", "yolov4-tiny.cfg")
 
+    # Objekt zum Zählen der Bienen in den Eingabevideos
     bee_counter = Counter("bees")
+
+    # Objekt zum Zählen der infizierten Bienen in den Eingabevideos
     infected_counter = Counter("infected bees")
+
+    seconds_counter = Counter("analyzed seconds")
+
+    # Objekt zum schreiben der Counter in die Ausgabedatei
+    Output_Writer([bee_counter, infected_counter, seconds_counter])
 
     for object_type in ["bees", "infected", "whole"]:
         Video_Clipper.clear_dir(se.OUTPUT_PATH / object_type)
@@ -35,11 +44,13 @@ def main():
             # Objekt zur Verfolgung der Bienen und Untersuchung auf Varroainfektionen
             tracker = Tracker(video, bee_detector, vra_detector)
 
+            tracker.bee_counter = Counter("bees", bee_counter)
+            tracker.infected_counter = Counter("infected bees", infected_counter)
+            tracker.seconds_counter = Counter("analyzed seconds", seconds_counter)
+            tracker.counters = [tracker.bee_counter, tracker.infected_counter, tracker.seconds_counter]
+
             # lasse tracker laufen
             tracker.run(se.FRAME_DIST)
-
-            bee_counter.sub_counter(tracker.bee_counter)
-            infected_counter.sub_counter(tracker.infected_counter)
 
     print(bee_counter)
     print(infected_counter)

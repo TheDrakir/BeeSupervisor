@@ -10,13 +10,16 @@ from lib.video_clipper import Video_Clipper
 class Tracker:
     '''Klasse zur Verfolgung und Untersuchung von Bienen in einem Video'''
 
-    def __init__(self, vin_path, bee_detector, vra_detector):
+    def __init__(self, vin_path, bee_detector, vra_detector, laser = None):
         self.vin_path = vin_path
 
         # setze den genutzten Bee_Detector
         self.bee_detector = bee_detector
         # setze den genutzten Vra_Detector
         self.vra_detector = vra_detector
+
+        # setze den angesteuerten Laser
+        self.laser = laser
 
         # maximale Bewegungsdistanz einer Biene zwischen zwei untersuchten Frames
         bee_dist_thresh = se.FRAME_DIST * 40
@@ -31,11 +34,6 @@ class Tracker:
         self.bees = []
         # infizierte Bienen im aktuellen Videoeinzelbild
         self.infected_bees = []
-
-        # Zähler der bisher erkannten Bienen
-        self.bee_counter = Counter("bees")
-        # Zähler der bisher erkannten infizierten Bienen
-        self.infected_counter = Counter("infected bees")
         
         self.set_vin()
 
@@ -72,6 +70,7 @@ class Tracker:
                 break
             self.track_image()
             self.frame += frame_dist
+            self.seconds_counter.set(int(self.frame // self.fps))
         
         for vc in self.vcs:
             if vc.writing:
@@ -98,9 +97,16 @@ class Tracker:
 
         self.vc_bees.active = bool(self.bees)
         self.vc_infected.active = bool(self.infected_bees)
+        if se.CONTROL_LASER and self.infected_bees:
+            bee = self.infected_bees[0]
+            self.laser.pointAt(se.X0_ANALYSIS + bee.pos0.x + bee.vra.ctr[0], se.y0_ANALYSIS + bee.pos0.y + bee.vra.ctr[1])
 
         for vc in self.vcs:
             vc.update()
+
+        if self.vc_bees.writing:
+            if self.vc_bees.start_frame <= self.frame - 15 * self.fps:
+                self.vc_bees.release()
 
     # füge eine Biene zu self.bees hinzu
     # tracke sie zum vorherigen Videoeinzelbild, falls sie dort schon sichtbar war

@@ -1,6 +1,3 @@
-from pathlib import Path
-from typing import Set
-
 import lib.settings as se
 from lib.video_tools import Video_Tools
 from lib.editor import Editor

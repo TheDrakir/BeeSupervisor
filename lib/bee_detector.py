@@ -2,7 +2,6 @@ import cv2
 
 import lib.settings as se
 from lib.bee import Bee
-from lib.timer import Timer
 
 
 class Bee_Detector:

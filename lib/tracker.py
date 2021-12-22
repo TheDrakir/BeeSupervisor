@@ -85,12 +85,15 @@ class Tracker:
 
 
         self.cropped = self.image[se.Y0_ANALYSIS : se.Y1_ANALYSIS, se.X0_ANALYSIS : se.X1_ANALYSIS]
+        # ermittle die Bienen im Bild
         self.detected_bees = self.bee_detector.get_bees(self.cropped)
 
         for bee in self.prev_bees:
             bee.prev_ctr = None
+        # füge die Bienen im Bild dem Tracker hinzu
         for detected_bee in self.detected_bees:
             self.add_bee(detected_bee)
+        # teste alle Bienen des Trackers auf eine Varroainfektion
         self.infected_bees = []
         for bee in self.bees:
            self.set_infected(bee)
@@ -101,9 +104,12 @@ class Tracker:
             bee = self.infected_bees[0]
             self.laser.pointAt(se.X0_ANALYSIS + bee.pos0.x + bee.vra.ctr[0], se.y0_ANALYSIS + bee.pos0.y + bee.vra.ctr[1])
 
+        # update alle video_clippers
         for vc in self.vcs:
             vc.update()
 
+        # Bienenclips werden nach 15s abgebrochen
+        # daher entstehen auch für sehr dichte Eingabeivideos kurze Bienenclips
         if self.vc_bees.writing:
             if self.vc_bees.start_frame <= self.frame - 15 * self.fps:
                 self.vc_bees.release()
@@ -119,6 +125,7 @@ class Tracker:
         closest_dist = se.MOVEMENT_THRESH * se.FRAME_DIST
         closest_bee = new_bee
 
+        # finde die nächste Biene, falls diese näher als die Minimaldistanz ist
         for prev_bee in self.prev_bees:
             if prev_bee.prev_ctr is None:
                 dist = prev_bee.dist(new_bee)
@@ -126,10 +133,12 @@ class Tracker:
                     closest_dist = dist
                     closest_bee = prev_bee
 
+        # lösche Mehrfacherkennungen einer Biene
         for bee in self.bees:
             if bee.dist(new_bee) <= se.DUPLICATE_THRESH:
                 return
 
+        # tracke die nächste Biene von den letzten Frame auf die aktuelle Position
         closest_bee.track(new_bee)
         if closest_dist == se.MOVEMENT_THRESH * se.FRAME_DIST:
             closest_bee.id = self.bee_counter.value

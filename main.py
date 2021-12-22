@@ -22,7 +22,7 @@ def main():
     bee_detector = Bee_Detector("bee_detector.weights", "yolov4-tiny.cfg")
 
     # Objekt zur Milbenerkennung
-    vra_detector = Vra_Detector("custom-yolov4-tiny-detector_4000.weights", "yolov4-tiny.cfg")
+    vra_detector = Vra_Detector("vra_detector.weights", "yolov4-tiny.cfg")
 
     # Objekt zum Zählen der Bienen in den Eingabevideos
     bee_counter = Counter("bees")
@@ -40,10 +40,11 @@ def main():
 
     for video in (se.VIN_PATH).iterdir():
         if video.suffix == ".mp4":
-            print(video)
+            print("analyzing: {:>30}\n...".format(video.name))
             # Objekt zur Verfolgung der Bienen und Untersuchung auf Varroainfektionen
             tracker = Tracker(video, bee_detector, vra_detector)
 
+            # setze die sub-counters, die die jeweiligen Werte für tracker aufnehmen
             tracker.bee_counter = Counter("bees", bee_counter)
             tracker.infected_counter = Counter("infected bees", infected_counter)
             tracker.seconds_counter = Counter("analyzed seconds", seconds_counter)

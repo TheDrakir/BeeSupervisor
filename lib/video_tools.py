@@ -29,18 +29,3 @@ class Video_Tools:
         while len(out) < l:
             out = "0" + out
         return out
-
-    # gibt die Frame-Intervalle zurück, die alle Frames aus frames enthalten
-    # Lücken der Länge < merge_dist werden zu den Intervallen hinzugefügt
-    @staticmethod
-    def get_video_intervals(frames):
-        merge_dist = 10
-        intervals = []
-        i = 0
-        while i < len(frames):
-            for j in range(i, len(frames)):
-                if j + 1 == len(frames) or frames[j+1] > frames[j] + merge_dist:
-                    break
-            intervals.append((frames[i], frames[j] + merge_dist))
-            i = j + 1
-        return intervals

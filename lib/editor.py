@@ -22,7 +22,6 @@ class Editor:
         if se.DARKEN_BACKGROUND:
             mask = np.full(self.tracker.image.shape[:2] + (1,), 0.25, np.float)
         for bee in self.tracker.bees:
-            cv2.imwrite(str(se.OUTPUT_PATH / "images" / "{}-{}.jpg".format(self.tracker.vin_path.stem, self.tracker.frame)), Editor.get_cropped_bee(self.tracker.image, bee))
             if se.DRAW_RECTANGLES:
                 cv2.rectangle(edited, tuple(bee.pos0.decropped()), tuple(bee.pos1.decropped()), Editor.get_color(bee), 2)
                 cv2.putText(edited, "id: " + str(bee.id), tuple(bee.pos0.decropped() + Pos(0, -5)), cv2.FONT_HERSHEY_SIMPLEX, 1, Editor.get_color(bee), 2, 2)

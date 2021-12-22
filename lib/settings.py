@@ -1,7 +1,12 @@
 from pathlib import Path
 import json
 
+
 def init(input_settings_path):
+    '''
+    Speichert die Einstellungen aus der json Datei als globale Variablen.
+    Auf diese können alle Module des Projekts zugreifen.
+    '''
     with open(input_settings_path) as f:
         data = json.load(f)
 

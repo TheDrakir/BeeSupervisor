@@ -1,9 +1,9 @@
 {
     "control_laser": false,
-    "darken_background": true,
+    "darken_background": false,
     "draw_rectangles": true,
     "duplicate_thresh": 20,
-    "frame_dist": 1,
+    "frame_dist": 3,
     "healthy_color": [
         42,
         219,
@@ -23,7 +23,7 @@
     "vin_dir": "vin",
     "width_for_drawing_roi": 500,
     "write_bee_clips": false,
-    "write_infected_clips": false,
+    "write_infected_clips": true,
     "write_whole": true,
     "x0": 0,
     "x1": 1920,

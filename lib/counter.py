@@ -8,6 +8,11 @@ class Counter:
         self.output_writer = None
         self.value = 0
 
+        self.multiplier = 1
+
+    def get_value(self):
+        return self.value * self.multiplier
+
     # setzt value auf 0 zurück
     def reset(self):
         self.set(0)

@@ -30,11 +30,11 @@ $ pip install opencv-python
 
 ## Eingabe
 ***
-So wie das Projekt gedownloaded wurde sind 1., 2., 3. bereits konfiguriert. Wenn keine Änderungen der Eingaben erfordert werden, ist das Projekt also **direkt ausführbar**!
+So wie das Projekt gedownloaded wurde sind 2., 3. bereits konfiguriert. Wenn keine Änderungen der Eingaben erfordert werden, ist das Projekt also **direkt nach dem Einfügen einer Videodatei aus Google Drive ausführbar**!
 ***
 
 1. In input/ werden alle Videos abgelegt, die untersucht werden sollen.
-    - Beispielvideos, mit denen das Programm getestet werden kann, befinden sich in example/.
+    - Beispielvideos, mit denen das Programm getestet werden kann, befinden sich auf [google drive](https://drive.google.com/drive/folders/1xZkujHMU9dHnHmXGMgr4tgWBQ33h9in5?usp=sharing).
     - Es kann ein Einzelvideo oder mehrere analysiert werden
 2. Wenn personalisierte Einstellungen vorgenommen werden möchten, wird die settings.json-Datei bearbeitet.
     - Ausgabevideos: Man kann entscheiden, ob Videos mit folgenden Elementen gespeichert werden sollen. Dafür setzt man die entsprechende Variable in settings.json auf true/false.

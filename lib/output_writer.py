@@ -24,6 +24,6 @@ class Output_Writer:
     # schreibe die Werte der Zähler unter ihren Namen in die Ausgabedatei
     def write(self):
         with open(self.file_path, "w") as f:
-            json.dump({counter.name : counter.value for counter in self.counters} , f, indent=4, sort_keys=True)
+            json.dump({counter.name : counter.get_value() for counter in self.counters} , f, indent=4, sort_keys=True)
         self.timer.reset()
         self.timer.begin()

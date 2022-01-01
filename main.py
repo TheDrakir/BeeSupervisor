@@ -1,7 +1,9 @@
 from pathlib import Path
-from lib.output_writer import Output_Writer
+from moviepy.editor import VideoFileClip
+
 
 import lib.settings as se
+from lib.output_writer import Output_Writer
 from lib.bee_detector import Bee_Detector
 from lib.vra_detector import Vra_Detector
 from lib.tracker import Tracker
@@ -15,6 +17,8 @@ def main():
     # t0 ist ein Timer für die gesamte main()-Funktion
     t0 = Timer("absolute")
     t0.begin()
+
+    print(Path.cwd())
 
     se.init(Path.cwd() / "input" / "settings.json")
 
@@ -32,8 +36,16 @@ def main():
 
     seconds_counter = Counter("analyzed seconds")
 
+    duration_counter = Counter("duration")
+
+    for video in (se.VIN_PATH).iterdir():
+        if video.suffix == ".mp4":
+            clip = VideoFileClip(str(video))
+            duration_counter.set(duration_counter.value + clip.duration)
+    duration_counter.value = int(duration_counter.value + 1)
+
     # Objekt zum schreiben der Counter in die Ausgabedatei
-    Output_Writer([bee_counter, infected_counter, seconds_counter])
+    Output_Writer([bee_counter, infected_counter, seconds_counter, duration_counter])
 
     for object_type in ["bees", "infected", "whole"]:
         Video_Clipper.clear_dir(se.OUTPUT_PATH / object_type)

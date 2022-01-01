@@ -3,7 +3,7 @@
     "darken_background": false,
     "draw_rectangles": true,
     "duplicate_thresh": 20,
-    "frame_dist": 3,
+    "frame_dist": 4,
     "healthy_color": [
         42,
         219,

@@ -7,23 +7,28 @@ import cv2
 class Video_Clipper:
     '''Klasse zum Erstellen von Video-Clips'''
 
+    # der Video_Clipper schreibt nicht nur, wenn er im aktuellen Frame aktiviert wird
+    # er schreibt, wenn er in einem der letzten 10 (merge_dist) frames aktiviert wurde
     merge_dist = 10
 
     def __init__(self, tracker, object_type, apply=True, active=False):
         self.tracker = tracker
         self.path = se.OUTPUT_PATH / object_type
+        # falls self.apply false ist, wird der Video_Clipper nicht verwendet
         self.apply = apply
+        # self.active speichert, ob der Video_Clipper im aktuellen Frame betätigt wurde
         self.active = active
+        # self.writing speichert, ob der Video_Clipper jetzt schreibt
+        self.writing = False
 
+        # mit self.editor werden die Bilder editiert, die in das Video geschrieben werden
         self.editor = Editor(tracker)
 
-        self.writing = False
         self.start_frame = 0
         self.last_active_frame = 0
         self.vt = Video_Tools(tracker.fps)
 
     def update(self):
-        '''Wird '''
         if self.apply:
             if self.active:
                 self.last_active_frame = self.tracker.frame

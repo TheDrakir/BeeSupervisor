@@ -7,6 +7,7 @@ from lib.bee import Bee
 class Bee_Detector:
     '''Klasse zum Erkennen von Bienen'''
 
+    # die Score-Grenze, ab der eine Bounding Box eine Biene ist
     confidence_thresh = .9
 
     def __init__(self, weights, config):
@@ -34,7 +35,7 @@ class Bee_Detector:
         # Dimensionen des Eingabebilds des neuronalen Netzes
         new_size = (256, 256)
         
-        # ermittle output, die Liste aller Bounding Boxes und der dazugehörigen Scores mit self.network
+        # ermittle aus dem blob über network den output, die Liste aller Bounding Boxes und der dazugehörigen Scores mit self.network
         blob = cv2.dnn.blobFromImage(image, channel_scalar, new_size, channel_subtrahend, swapRB=True, crop=False)
         self.network.setInput(blob)
         outputs = self.network.forward(self.output_layers)

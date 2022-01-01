@@ -21,6 +21,7 @@ class ROI_Setter:
         self.h, self.w, _ = self.image.shape
         self.r = se.WIDTH_FOR_DRAWING_ROI / self.w
 
+        # skaliere das Bild auf die Breite aus settings.py
         self.resized = cv2.resize(self.image, (se.WIDTH_FOR_DRAWING_ROI, int(self.r * self.h)))
         self.edited0 = self.resized.copy()
         self.edited1 = self.edited0.copy()
@@ -28,17 +29,18 @@ class ROI_Setter:
         self.ix = -1
         self.iy = -1
 
-
+        # definiere das Fenster mit Callback zu self.update
         win_name = "Draw the region of interest!"
         cv2.namedWindow(win_name)
         cv2.setMouseCallback(win_name, self.update)
+        # öffne das Fenster bis zur Schließung durch den Nutzer mit der ESC-Taste
         while True:
             cv2.imshow(win_name, self.edited1)
-            # wait 5 seconds then wait for ESC key
             if cv2.waitKey(5) & 0xFF == 27:
                 break
         cv2.destroyAllWindows() 
 
+    # beende das zeichnen des Rechtecks und speichere seine Werte in der Ausgabedatei
     def stop_drawing(self, x, y):
         self.is_drawing = False
         mask = np.full(self.edited0.shape[:2] + (1,), 0.25, np.float)

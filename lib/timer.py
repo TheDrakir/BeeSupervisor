@@ -6,7 +6,9 @@ class Timer:
     def __init__(self, name):
         self.time = 0
         self.name = name
+        # self.call_count speichert, wie oft der Timer schon Zeit gestoppt hat
         self.call_count = 0
+        # self.running speichert, ob der Timer jetzt die Zeit stoppt oder hält
         self.running = False
 
     # starte den Timer
@@ -22,7 +24,7 @@ class Timer:
 
     # gibt den String zurück, der den Namen und die Laufzeit des Timers enthält
     def __str__(self):
-        return "total{:<23} {}".format("("+self.name+"):", Timer.to_time_str(self.eval()))
+        return "timer{:<23} {}".format("("+self.name+"):", Timer.to_time_str(self.eval()))
 
     # gibt den String zurück, der den Namen und die durchschnittliche Laufzeit des Timers enthält
     def str_avg(self):
@@ -35,12 +37,14 @@ class Timer:
         else:
             return self.eval() / self.call_count
 
+    # gebe den aktuellen Wert des Timers zurück
     def eval(self):
         t = self.time
         if self.running:
             t += perf_counter()
         return t
 
+    # setze den Timer auf 0 zurück
     def reset(self):
         self.time = 0
         self.call_count = 0

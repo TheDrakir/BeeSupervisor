@@ -3,7 +3,7 @@
     "darken_background": false,
     "draw_rectangles": true,
     "duplicate_thresh": 20,
-    "frame_dist": 2,
+    "frame_dist": 4,
     "healthy_color": [
         42,
         219,
@@ -24,7 +24,7 @@
     "width_for_drawing_roi": 500,
     "write_bee_clips": false,
     "write_infected_clips": true,
-    "write_whole": false,
+    "write_whole": true,
     "x0": 0,
     "x1": 1920,
     "y0": 518,

@@ -38,12 +38,12 @@ class Video_Clipper:
     # öffnet das Ausgabevideo
     def open(self):
         self.start_frame = self.last_active_frame
-        self.vout_path = self.path / "{}-{}.mp4".format(self.tracker.vin_path.stem, self.vt.get_time_stamp(self.last_active_frame))
+        self.vout_path = self.path / "{}-{}.webm".format(self.tracker.vin_path.stem, self.vt.get_time_stamp(self.last_active_frame))
         if se.DRAW_EDITS:
             self.vout = cv2.VideoWriter()
             fps = self.tracker.fps / se.FRAME_DIST
             dim = self.tracker.width, self.tracker.height
-            fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+            fourcc = cv2.VideoWriter_fourcc(*'VP80')
             self.vout.open(str(self.vout_path), fourcc, fps, dim, True)
         self.writing = True
 

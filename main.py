@@ -1,4 +1,6 @@
 from pathlib import Path
+from lib.output_writer import Output_Writer
+from sys import argv
 from moviepy.editor import VideoFileClip
 
 
@@ -18,9 +20,9 @@ def main():
     t0 = Timer("absolute")
     t0.begin()
 
-    print(Path.cwd())
-
-    se.init(Path.cwd() / "input" / "settings.json")
+    # Pfad zur Konfigurationsdatei als command-line-argument übergeben...
+    if len(argv) <= 1: se.init(Path.cwd() / "input" / "settings.json")
+    else: se.init(argv[1])
 
     # Objekt zur Bienenerkennung
     bee_detector = Bee_Detector("bee_detector.weights", "yolov4-tiny.cfg")

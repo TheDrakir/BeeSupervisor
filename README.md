@@ -1,4 +1,4 @@
-# SemiCode
+# BeeSupervisor
 ![Image text](examples/thumbnail.jpg)
 ***
 ## Table of Contents
